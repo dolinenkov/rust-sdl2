@@ -1,7 +1,7 @@
 use libc::{c_int, c_uint, c_float, c_char};
 use std::ffi::{CStr, CString, NulError};
 use std::{mem, ptr, fmt};
-use std::rc::Rc;
+use std::sync::Arc;
 use std::error::Error;
 use std::ops::{Deref, DerefMut};
 use std::convert::TryFrom;
@@ -574,12 +574,12 @@ impl From<i32> for SwapInterval {
 /// then the `SDL_Window` will not be destroyed until there are no more references to the `WindowContext`.
 /// This may happen when a `TextureCreator<Window>` outlives the `Canvas<Window>`
 pub struct Window {
-    context: Rc<WindowContext>,
+    context: Arc<WindowContext>,
 }
 
 impl From<WindowContext> for Window {
     fn from(context: WindowContext) -> Window {
-        Window { context: Rc::new(context) }
+        Window { context: Arc::new(context) }
     }
 }
 
@@ -1085,7 +1085,7 @@ impl Window {
 
     #[inline]
     /// Create a new `Window` without taking ownership of the `WindowContext`
-    pub const unsafe fn from_ref(context: Rc<WindowContext>) -> Window {
+    pub const unsafe fn from_ref(context: Arc<WindowContext>) -> Window {
         Window { context }
     }
 
@@ -1097,7 +1097,7 @@ impl Window {
         self.into()
     }
 
-    pub fn context(&self) -> Rc<WindowContext> {
+    pub fn context(&self) -> Arc<WindowContext> {
         self.context.clone()
     }
 
